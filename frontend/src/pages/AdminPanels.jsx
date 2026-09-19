@@ -1,7 +1,232 @@
-import {useEffect,useState} from 'react';import axios from 'axios';import DashboardLayout from '../components/DashboardLayout';import {LoadingSpinner,EmptyState,StatusBadge,StatCard} from '../components/UI';import {Users,ShieldCheck,FileText,Activity,CheckCircle} from 'lucide-react';import {toast} from 'react-toastify';
-const API='http://localhost:5000';const get=p=>axios.get(API+p);const put=(p,d)=>axios.put(API+p,d);
-export function AdminUsers(){const[u,setU]=useState([]);useEffect(()=>{get('/api/admin/users').then(r=>setU(r.data)).catch(()=>toast.error('Could not load users'))},[]);return <DashboardLayout title="User Management" subtitle="Review registered platform accounts."><div className="card-jl"><div className="card-jl-header"><h3><Users size={18}/> User directory</h3></div><div className="table-jl-wrapper"><table className="table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th></tr></thead><tbody>{u.map(x=><tr key={x.id}><td><strong>{x.name}</strong></td><td>{x.email}</td><td><StatusBadge status={x.role}/></td><td>{new Date(x.createdAt).toLocaleDateString()}</td></tr>)}</tbody></table></div></div></DashboardLayout>}
-export function AdminVerification(){const[d,setD]=useState({hospitals:[],banks:[]});const load=()=>get('/api/admin/verifications').then(r=>setD(r.data)).catch(()=>toast.error('Could not load verification queue'));useEffect(load,[]);const verify=async(type,id)=>{try{await put('/api/admin/verification/'+type+'/'+id,{verified:true});toast.success('Verified');load()}catch(e){toast.error('Verification failed')}};return <DashboardLayout title="Verification Queue" subtitle="Only administrators can verify institutional accounts."><div className="grid-2"><Verify title="Hospitals" items={d.hospitals} type="hospital" onVerify={verify}/><Verify title="Blood Banks" items={d.banks} type="blood-bank" onVerify={verify}/></div></DashboardLayout>}
-function Verify({title,items,type,onVerify}){return <div className="card-jl"><div className="card-jl-header"><h3><ShieldCheck size={18}/>{title}</h3></div><div className="card-jl-body">{!items.length?<EmptyState icon={CheckCircle} title="Queue clear"/>:items.map(x=><div className="list-row" key={x.id}><div><strong>{x.user?.name}</strong><div className="muted">{x.user?.email}</div></div><button className="btn-primary-jl" onClick={()=>onVerify(type,x.id)}>Verify</button></div>)}</div></div>}
-export function AdminAudit(){const[l,setL]=useState([]);useEffect(()=>{get('/api/admin/audit-logs').then(r=>setL(r.data)).catch(()=>{})},[]);return <DashboardLayout title="Audit Logs" subtitle="Recent security and verification events."><div className="card-jl"><div className="card-jl-header"><h3><Activity size={18}/> Audit trail</h3></div>{!l.length?<EmptyState icon={Activity} title="No audit events yet"/>:<div className="table-jl-wrapper"><table className="table"><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Entity</th></tr></thead><tbody>{l.map(x=><tr key={x.id}><td>{new Date(x.createdAt).toLocaleString()}</td><td>{x.user?.name||'System'}</td><td><StatusBadge status={x.action}/></td><td>{x.entity}</td></tr>)}</tbody></table></div>}</div></DashboardLayout>}
-export function AdminReports(){const[s,setS]=useState(null);useEffect(()=>{get('/api/admin/stats').then(r=>setS(r.data)).catch(()=>{})},[]);return <DashboardLayout title="Reports & Analytics" subtitle="System-wide operational summary."><div className="grid-4">{s&&<><StatCard icon={Users} label="Donors" value={s.totalDonors}/><StatCard icon={FileText} label="Requests" value={s.totalRequests}/><StatCard icon={Activity} label="Donations" value={s.donations}/><StatCard icon={ShieldCheck} label="Blood Units" value={s.totalUnits}/></>}</div><div className="card-jl" style={{marginTop:20}}><div className="card-jl-body"><h3>Operational report</h3><p className="muted">This MVP dashboard summarizes current records. Monthly/yearly exports can be extended from the same API layer.</p></div></div></DashboardLayout>}
+import { useEffect, useState } from "react";
+import axios from "axios";
+import DashboardLayout from "../components/DashboardLayout";
+import {
+  LoadingSpinner,
+  EmptyState,
+  StatusBadge,
+  StatCard,
+} from "../components/UI";
+import {
+  Users,
+  ShieldCheck,
+  FileText,
+  Activity,
+  CheckCircle,
+} from "lucide-react";
+import { toast } from "react-toastify";
+const API = "https://jeevanlink-production.up.railway.app";
+const get = (p) => axios.get(API + p);
+const put = (p, d) => axios.put(API + p, d);
+export function AdminUsers() {
+  const [u, setU] = useState([]);
+  useEffect(() => {
+    get("/api/admin/users")
+      .then((r) => setU(r.data))
+      .catch(() => toast.error("Could not load users"));
+  }, []);
+  return (
+    <DashboardLayout
+      title="User Management"
+      subtitle="Review registered platform accounts."
+    >
+      <div className="card-jl">
+        <div className="card-jl-header">
+          <h3>
+            <Users size={18} /> User directory
+          </h3>
+        </div>
+        <div className="table-jl-wrapper">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {u.map((x) => (
+                <tr key={x.id}>
+                  <td>
+                    <strong>{x.name}</strong>
+                  </td>
+                  <td>{x.email}</td>
+                  <td>
+                    <StatusBadge status={x.role} />
+                  </td>
+                  <td>{new Date(x.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
+export function AdminVerification() {
+  const [d, setD] = useState({ hospitals: [], banks: [] });
+  const load = () =>
+    get("/api/admin/verifications")
+      .then((r) => setD(r.data))
+      .catch(() => toast.error("Could not load verification queue"));
+  useEffect(load, []);
+  const verify = async (type, id) => {
+    try {
+      await put("/api/admin/verification/" + type + "/" + id, {
+        verified: true,
+      });
+      toast.success("Verified");
+      load();
+    } catch (e) {
+      toast.error("Verification failed");
+    }
+  };
+  return (
+    <DashboardLayout
+      title="Verification Queue"
+      subtitle="Only administrators can verify institutional accounts."
+    >
+      <div className="grid-2">
+        <Verify
+          title="Hospitals"
+          items={d.hospitals}
+          type="hospital"
+          onVerify={verify}
+        />
+        <Verify
+          title="Blood Banks"
+          items={d.banks}
+          type="blood-bank"
+          onVerify={verify}
+        />
+      </div>
+    </DashboardLayout>
+  );
+}
+function Verify({ title, items, type, onVerify }) {
+  return (
+    <div className="card-jl">
+      <div className="card-jl-header">
+        <h3>
+          <ShieldCheck size={18} />
+          {title}
+        </h3>
+      </div>
+      <div className="card-jl-body">
+        {!items.length ? (
+          <EmptyState icon={CheckCircle} title="Queue clear" />
+        ) : (
+          items.map((x) => (
+            <div className="list-row" key={x.id}>
+              <div>
+                <strong>{x.user?.name}</strong>
+                <div className="muted">{x.user?.email}</div>
+              </div>
+              <button
+                className="btn-primary-jl"
+                onClick={() => onVerify(type, x.id)}
+              >
+                Verify
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+export function AdminAudit() {
+  const [l, setL] = useState([]);
+  useEffect(() => {
+    get("/api/admin/audit-logs")
+      .then((r) => setL(r.data))
+      .catch(() => {});
+  }, []);
+  return (
+    <DashboardLayout
+      title="Audit Logs"
+      subtitle="Recent security and verification events."
+    >
+      <div className="card-jl">
+        <div className="card-jl-header">
+          <h3>
+            <Activity size={18} /> Audit trail
+          </h3>
+        </div>
+        {!l.length ? (
+          <EmptyState icon={Activity} title="No audit events yet" />
+        ) : (
+          <div className="table-jl-wrapper">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Actor</th>
+                  <th>Action</th>
+                  <th>Entity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {l.map((x) => (
+                  <tr key={x.id}>
+                    <td>{new Date(x.createdAt).toLocaleString()}</td>
+                    <td>{x.user?.name || "System"}</td>
+                    <td>
+                      <StatusBadge status={x.action} />
+                    </td>
+                    <td>{x.entity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
+  );
+}
+export function AdminReports() {
+  const [s, setS] = useState(null);
+  useEffect(() => {
+    get("/api/admin/stats")
+      .then((r) => setS(r.data))
+      .catch(() => {});
+  }, []);
+  return (
+    <DashboardLayout
+      title="Reports & Analytics"
+      subtitle="System-wide operational summary."
+    >
+      <div className="grid-4">
+        {s && (
+          <>
+            <StatCard icon={Users} label="Donors" value={s.totalDonors} />
+            <StatCard
+              icon={FileText}
+              label="Requests"
+              value={s.totalRequests}
+            />
+            <StatCard icon={Activity} label="Donations" value={s.donations} />
+            <StatCard
+              icon={ShieldCheck}
+              label="Blood Units"
+              value={s.totalUnits}
+            />
+          </>
+        )}
+      </div>
+      <div className="card-jl" style={{ marginTop: 20 }}>
+        <div className="card-jl-body">
+          <h3>Operational report</h3>
+          <p className="muted">
+            This MVP dashboard summarizes current records. Monthly/yearly
+            exports can be extended from the same API layer.
+          </p>
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
