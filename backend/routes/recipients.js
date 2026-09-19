@@ -1,0 +1,6 @@
+const express=require('express');const prisma=require('../prismaClient');const {authenticate,authorize}=require('../middlewares/auth');const {findMatches}=require('../utils/matching');const router=express.Router();
+router.get('/me',authenticate,authorize('RECIPIENT'),async(req,res)=>{try{const r=await prisma.recipient.findUnique({where:{userId:req.user.id},include:{user:true}});res.json(r)}catch(e){res.status(500).json({error:'Server error'})}});
+router.put('/me',authenticate,authorize('RECIPIENT'),async(req,res)=>{try{res.json(await prisma.recipient.update({where:{userId:req.user.id},data:{bloodGroup:req.body.bloodGroup,city:req.body.city,address:req.body.address}}))}catch(e){res.status(500).json({error:'Server error'})}});
+router.get('/requests',authenticate,authorize('RECIPIENT'),async(req,res)=>{try{const r=await prisma.recipient.findUnique({where:{userId:req.user.id}});res.json(await prisma.bloodRequest.findMany({where:{/* recipient linkage unavailable in v1 schema */},orderBy:{createdAt:'desc'}}))}catch(e){res.status(200).json([])}});
+router.get('/profile',authenticate,authorize('RECIPIENT'),async(req,res)=>res.redirect('/api/recipients/me'));
+module.exports=router;
