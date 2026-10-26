@@ -1,4 +1,5 @@
 const prisma = require('../prismaClient');
+const { calculateNbtcEligibility } = require('./nbtcEligibility');
 
 const bloodCompatibility = {
   'A_POS': ['A_POS', 'A_NEG', 'O_POS', 'O_NEG'],
@@ -39,13 +40,16 @@ const findMatches = async (requestId) => {
   const compatibleGroups = getCompatibleBloodGroups(request.bloodGroup);
 
   // 1. Find eligible donors with compatible blood
-  const potentialDonors = await prisma.donor.findMany({
+  const potentialDonorsRaw = await prisma.donor.findMany({
     where: {
       bloodGroup: { in: compatibleGroups },
       eligibility: 'ELIGIBLE',
     },
     include: { user: true }
   });
+
+  // Enforce NBTC India waiting interval rule (90 days for men, 120 days for women)
+  const potentialDonors = potentialDonorsRaw.filter(d => calculateNbtcEligibility(d).isEligible);
 
   // Calculate distance and sort donors
   const donorsWithScore = potentialDonors.map(donor => {

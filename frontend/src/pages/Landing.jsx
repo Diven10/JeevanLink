@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart, Droplets, Building2, FlaskConical, ArrowRight, CheckCircle, Bell, Zap } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -17,6 +18,28 @@ const roles = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
+
+  const getRequestBloodPath = () => {
+    if (!user) return '/login';
+    if (user.role === 'HOSPITAL') return '/hospital/dashboard';
+    if (user.role === 'RECIPIENT') return '/recipient/requests/new';
+    return '/find-blood';
+  };
+
+  const getBecomeDonorPath = () => {
+    if (!user) return '/register';
+    if (user.role === 'DONOR') return '/donor/appointments';
+    return '/find-blood';
+  };
+
+  const getEmergencyPath = () => {
+    if (!user) return '/login';
+    if (user.role === 'HOSPITAL') return '/hospital/emergency-request';
+    if (user.role === 'RECIPIENT') return '/recipient/requests/new';
+    return '/find-blood';
+  };
+
   return (
     <div style={{ background: '#fff' }}>
       {/* HERO */}
@@ -37,12 +60,12 @@ export default function Landing() {
                 JeevanLink connects blood donors, hospitals, and blood banks with an intelligent matching engine — so no request goes unanswered.
               </p>
               <div className="hero-cta-group">
-                <Link to="/hospital/dashboard" className="btn-primary-jl lg" style={{ textDecoration: 'none' }}>
+                <Link to={getRequestBloodPath()} className="btn-primary-jl lg" style={{ textDecoration: 'none' }}>
                   <Droplets size={18} />
                   Request Blood
                 </Link>
-                <Link to="/register" className="btn-outline-jl lg light" style={{ textDecoration: 'none' }}>
-                  Become a Donor
+                <Link to={getBecomeDonorPath()} className="btn-outline-jl lg light" style={{ textDecoration: 'none' }}>
+                  {user?.role === 'DONOR' ? 'Schedule Donation' : 'Become a Donor'}
                   <ArrowRight size={18} />
                 </Link>
               </div>
@@ -167,7 +190,7 @@ export default function Landing() {
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚨</div>
               <h2>Need Blood Urgently?</h2>
               <p>Our emergency matching engine notifies eligible donors near you within seconds. Don't wait — every minute matters.</p>
-              <Link to="/login" className="btn-outline-jl light lg" style={{ textDecoration: 'none' }}>
+              <Link to={getEmergencyPath()} className="btn-outline-jl light lg" style={{ textDecoration: 'none' }}>
                 Create Emergency Request
                 <ArrowRight size={18} />
               </Link>

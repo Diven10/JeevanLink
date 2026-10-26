@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { API } from "../config/api";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-const API_URL = "https://jeevanlink-production.up.railway.app";
 const SESSION_TOKEN = "jl_token";
 const SESSION_USER = "jl_user";
 

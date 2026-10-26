@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   LayoutDashboard, User, Droplets, Calendar, Bell, Settings, LogOut,
   Menu, X, Heart, Building2, FlaskConical, ShieldCheck, Users,
-  FileText, AlertTriangle, Activity
+  FileText, AlertTriangle, Activity, Award, HeartHandshake
 } from 'lucide-react';
 
 const roleNavConfig = {
@@ -14,6 +14,8 @@ const roleNavConfig = {
     { label: 'Eligibility', href: '/donor/eligibility', icon: Heart },
     { label: 'Donations', href: '/donor/donations', icon: Droplets },
     { label: 'Appointments', href: '/donor/appointments', icon: Calendar },
+    { label: 'Organ Donation', href: '/donor/organ-donation', icon: HeartHandshake },
+    { label: 'Certificates', href: '/donor/certificates', icon: Award },
     { label: 'Notifications', href: '/donor/notifications', icon: Bell },
   ],
   RECIPIENT: [

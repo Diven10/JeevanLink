@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API } from "../config/api";
 import { useAuth } from "../contexts/AuthContext";
 import DashboardLayout from "../components/DashboardLayout";
 import {
@@ -46,12 +47,8 @@ export default function AdminDashboard() {
   const fetchAll = async () => {
     try {
       const [sRes, uRes] = await Promise.all([
-        axios.get(
-          "https://jeevanlink-production.up.railway.app/api/admin/stats",
-        ),
-        axios.get(
-          "https://jeevanlink-production.up.railway.app/api/admin/users",
-        ),
+        axios.get(`${API}/api/admin/stats`),
+        axios.get(`${API}/api/admin/users`),
       ]);
       setStats(sRes.data);
       setUsers(uRes.data);

@@ -14,7 +14,7 @@ export default function Register() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', role: 'DONOR',
-    bloodGroup: 'O_POS', address: '', city: '',
+    bloodGroup: 'O_POS', gender: 'MALE', address: '', city: '',
     latitude: '', longitude: '', phone: ''
   });
   const [loading, setLoading] = useState(false);
@@ -151,6 +151,45 @@ export default function Register() {
                         }}
                       >
                         {bg.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {formData.role === 'DONOR' && (
+                <div className="form-group-jl" style={{ marginTop: 16 }}>
+                  <label className="form-label-jl">
+                    Gender <span className="req">*</span>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400, marginLeft: 6 }}>
+                      (Applies Indian NBTC whole blood donation intervals)
+                    </span>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                    {[
+                      { value: 'MALE', label: 'Male (90 days)', desc: '3 months wait period' },
+                      { value: 'FEMALE', label: 'Female (120 days)', desc: '4 months wait period' },
+                      { value: 'OTHER', label: 'Other (90 days)', desc: 'Standard interval' },
+                    ].map(g => (
+                      <button
+                        key={g.value}
+                        type="button"
+                        onClick={() => set('gender', g.value)}
+                        style={{
+                          padding: '10px 6px',
+                          borderRadius: 8,
+                          border: `2px solid ${formData.gender === g.value ? 'var(--brand-primary)' : 'var(--border-color)'}`,
+                          background: formData.gender === g.value ? 'var(--brand-primary-light)' : 'white',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          transition: 'all 0.2s',
+                          fontSize: '0.825rem',
+                          fontWeight: 600,
+                          color: formData.gender === g.value ? 'var(--brand-primary)' : 'var(--text-secondary)'
+                        }}
+                      >
+                        <div>{g.label}</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 400 }}>{g.desc}</div>
                       </button>
                     ))}
                   </div>

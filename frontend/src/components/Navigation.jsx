@@ -18,6 +18,12 @@ export default function Navigation() {
     RECIPIENT: '/recipient/dashboard',
   };
 
+  const getDonatePath = () => {
+    if (!user) return '/register';
+    if (user.role === 'DONOR') return '/donor/appointments';
+    return roleDashboardPath[user.role] || '/';
+  };
+
   return (
     <nav className="landing-nav">
       <Link to="/" className="landing-nav-brand" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -26,10 +32,10 @@ export default function Navigation() {
       </Link>
 
       <div className="landing-nav-links">
-        <Link to="/#how-it-works">How It Works</Link>
+        <a href="/#how-it-works">How It Works</a>
         <Link to="/find-blood">Find Blood</Link>
-        <Link to="/register">Donate</Link>
-        <Link to="/awareness">Awareness & FAQ</Link>
+        <Link to={getDonatePath()}>Donate</Link>
+        <Link to="/awareness">Awareness &amp; FAQ</Link>
       </div>
 
       <div className="landing-nav-actions">

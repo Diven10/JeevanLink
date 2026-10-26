@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API } from "../config/api";
 import { useAuth } from "../contexts/AuthContext";
 import DashboardLayout from "../components/DashboardLayout";
 import {
@@ -40,9 +41,7 @@ export default function BloodBankDashboard() {
 
   const fetchInventory = async () => {
     try {
-      const res = await axios.get(
-        "https://jeevanlink-production.up.railway.app/api/blood-banks/inventory",
-      );
+      const res = await axios.get(`${API}/api/blood-banks/inventory`);
       setInventory(res.data);
     } catch {
       toast.error("Failed to load inventory");
@@ -55,13 +54,10 @@ export default function BloodBankDashboard() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await axios.post(
-        "https://jeevanlink-production.up.railway.app/api/blood-banks/inventory",
-        {
-          bloodGroup: form.bloodGroup,
-          units: parseInt(form.units),
-        },
-      );
+      await axios.post(`${API}/api/blood-banks/inventory`, {
+        bloodGroup: form.bloodGroup,
+        units: parseInt(form.units),
+      });
       toast.success(
         `Inventory updated for ${form.bloodGroup.replace("_POS", "+").replace("_NEG", "-")}`,
       );

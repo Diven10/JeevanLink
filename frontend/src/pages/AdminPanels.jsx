@@ -15,7 +15,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { toast } from "react-toastify";
-const API = "https://jeevanlink-production.up.railway.app";
+import { API } from "../config/api";
 const get = (p) => axios.get(API + p);
 const put = (p, d) => axios.put(API + p, d);
 export function AdminUsers() {

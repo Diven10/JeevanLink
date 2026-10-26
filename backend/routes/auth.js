@@ -7,7 +7,7 @@ const { authenticate } = require('../middlewares/auth');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  const { email, password, role, name, phone, bloodGroup, address, city, latitude, longitude } = req.body;
+  const { email, password, role, name, phone, bloodGroup, gender, address, city, latitude, longitude } = req.body;
 
   try {
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -29,7 +29,15 @@ router.post('/register', async (req, res) => {
 
     if (role === 'DONOR') {
       await prisma.donor.create({
-        data: { userId: user.id, bloodGroup, address, city, latitude: lat, longitude: lng }
+        data: {
+          userId: user.id,
+          bloodGroup,
+          gender: (gender || 'MALE').toUpperCase(),
+          address,
+          city,
+          latitude: lat,
+          longitude: lng
+        }
       });
     } else if (role === 'HOSPITAL') {
       await prisma.hospital.create({

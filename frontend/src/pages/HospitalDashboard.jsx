@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API } from "../config/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
@@ -23,7 +24,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-const API = "https://jeevanlink-production.up.railway.app";
 const bloodGroups = [
   { value: "A_POS", label: "A+" },
   { value: "A_NEG", label: "A-" },
